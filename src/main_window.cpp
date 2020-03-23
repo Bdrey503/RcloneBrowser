@@ -205,8 +205,6 @@ MainWindow::MainWindow() {
   ui.actionAddToScheduler->setIcon(
       QIcon(":media/images/qbutton_icons/addtoscheduler" + img_add + ".png"));
 
-
-
   ui.actionStartQueue->setIcon(
       QIcon(":media/images/qbutton_icons/run" + img_add + ".png"));
   ui.actionStopQueue->setIcon(
@@ -219,6 +217,11 @@ MainWindow::MainWindow() {
       QIcon(":media/images/qbutton_icons/vuparrow" + img_add + ".png"));
   ui.actionDownQueue->setIcon(
       QIcon(":media/images/qbutton_icons/vdownarrow" + img_add + ".png"));
+
+  ui.actionStartScheduler->setIcon(
+      QIcon(":media/images/qbutton_icons/run" + img_add + ".png"));
+  ui.actionPauseScheduler->setIcon(
+      QIcon(":media/images/qbutton_icons/pause" + img_add + ".png"));
 
   QPixmap arrowDownPixmap(":media/images/qbutton_icons/arrowdown" + img_add +
                           ".png");
@@ -254,6 +257,8 @@ MainWindow::MainWindow() {
   ui.buttonRemoveFromQueue->setDefaultAction(ui.actionRemoveFromQueue);
   ui.buttonDownQueue->setDefaultAction(ui.actionDownQueue);
   ui.buttonUpQueue->setDefaultAction(ui.actionUpQueue);
+  ui.buttonStartScheduler->setDefaultAction(ui.actionStartScheduler);
+  ui.buttonPauseScheduler->setDefaultAction(ui.actionPauseScheduler);
 
   // overwrite button text, we want different menu name and different conextual
   // menu
@@ -336,6 +341,10 @@ MainWindow::MainWindow() {
     ui.buttonStop->setMinimumWidth(button_width);
     ui.buttonAddToScheduler->setIconSize(QSize(icon_w, icon_h));
     ui.buttonAddToScheduler->setMinimumWidth(button_width);
+    ui.buttonPauseScheduler->setIconSize(QSize(icon_w, icon_h));
+    ui.buttonPauseScheduler->setMinimumWidth(button_width);
+    ui.buttonStartScheduler->setIconSize(QSize(icon_w, icon_h));
+    ui.buttonStartScheduler->setMinimumWidth(button_width);
 
 
   } else {
@@ -381,6 +390,10 @@ MainWindow::MainWindow() {
       ui.buttonStop->setMinimumWidth(button_width);
       ui.buttonAddToScheduler->setToolButtonStyle(Qt::ToolButtonTextOnly);
       ui.buttonAddToScheduler->setMinimumWidth(button_width);
+      ui.buttonPauseScheduler->setToolButtonStyle(Qt::ToolButtonTextOnly);
+      ui.buttonPauseScheduler->setMinimumWidth(button_width);
+      ui.buttonStartScheduler->setToolButtonStyle(Qt::ToolButtonTextOnly);
+      ui.buttonStartScheduler->setMinimumWidth(button_width);
 
 
     } else {
@@ -425,6 +438,11 @@ MainWindow::MainWindow() {
       ui.buttonStop->setIconSize(QSize(icon_w, icon_h));
       ui.buttonAddToScheduler->setToolButtonStyle(Qt::ToolButtonIconOnly);
       ui.buttonAddToScheduler->setIconSize(QSize(icon_w, icon_h));
+      ui.buttonPauseScheduler->setToolButtonStyle(Qt::ToolButtonIconOnly);
+      ui.buttonPauseScheduler->setIconSize(QSize(icon_w, icon_h));
+      ui.buttonStartScheduler->setToolButtonStyle(Qt::ToolButtonIconOnly);
+      ui.buttonStartScheduler->setIconSize(QSize(icon_w, icon_h));
+
     }
   }
 
@@ -465,6 +483,10 @@ MainWindow::MainWindow() {
   ui.actionPurgeQueue->setStatusTip(
       "Remove all not running tasks from the queue");
 
+  ui.buttonPauseScheduler->setStatusTip("Pause all active schedulers");
+  ui.buttonStartScheduler->setStatusTip("Start all previously active schedulers");
+
+  ui.buttonStartScheduler->setEnabled(false);
   ui.buttonStopAllJobs->setEnabled(false);
   ui.buttonCleanNotRunning->setEnabled(false);
 
@@ -1179,6 +1201,18 @@ MainWindow::MainWindow() {
       }
     }
   });
+
+
+//!!!
+  QObject::connect(ui.actionStartScheduler, &QAction::triggered, this, [=]() {
+  });
+
+  QObject::connect(ui.actionPauseScheduler, &QAction::triggered, this, [=]() {
+  });
+
+  QObject::connect(ui.actionAddToScheduler, &QAction::triggered, this, [=]() {
+  });
+
 
   QObject::connect(ui.actionAddToQueue, &QAction::triggered, this, [=]() {
     auto selection = ui.tasksListWidget->selectedItems();

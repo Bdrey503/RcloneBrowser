@@ -33,10 +33,10 @@
     <item>
      <widget class="QTabWidget" name="tabs">
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <property name="tabsClosable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <widget class="QWidget" name="widget">
        <attribute name="title">
@@ -373,10 +373,10 @@
           <item>
            <widget class="QToolButton" name="buttonAddToQueue">
             <property name="toolTip">
-             <string>Add selected tasks to the queue for later execution</string>
+             <string>Add to the queue</string>
             </property>
             <property name="statusTip">
-             <string>Add selected tasks to the queue for later execution</string>
+             <string>Add selected transfer tasks to the queue</string>
             </property>
             <property name="text">
              <string>Add</string>
@@ -387,9 +387,18 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolButton">
+           <widget class="QToolButton" name="buttonAddToScheduler">
+            <property name="toolTip">
+             <string>Add to the scheduler</string>
+            </property>
+            <property name="statusTip">
+             <string>Add selected transfer tasks to the scheduler</string>
+            </property>
             <property name="text">
-             <string>...</string>
+             <string>Add</string>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
            </widget>
           </item>
@@ -1024,6 +1033,14 @@
     <string>Stop all selected tasks</string>
    </property>
   </action>
+  <action name="actionAddToScheduler">
+   <property name="text">
+    <string>Add to the scheduler</string>
+   </property>
+   <property name="toolTip">
+    <string>Add selected transfer tasks to the scheduler</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>tabs</tabstop>
@@ -1072,6 +1089,22 @@
    <hints>
     <hint type="sourcelabel">
      <x>289</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonAddToScheduler</sender>
+   <signal>clicked()</signal>
+   <receiver>actionAddToScheduler</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
      <y>73</y>
     </hint>
     <hint type="destinationlabel">

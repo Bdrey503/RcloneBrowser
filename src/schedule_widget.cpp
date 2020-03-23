@@ -67,19 +67,29 @@ if (taskName == "") {}
 /*
   ui.cancel->setToolTip("Stop streaming");
   ui.cancel->setStatusTip("Stop streaming");
-
-  ui.copy->setIcon(
-      QIcon(":media/images/qbutton_icons/copy" + img_add + ".png"));
-  ui.copy->setIconSize(QSize(24, 24));
-
 */
 
-/*
-  QObject::connect(ui.copy, &QToolButton::clicked, this, [=]() {
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->setText(mArgs.join(" "));
+  ui.runTask->setIcon(
+      QIcon(":media/images/qbutton_icons/run" + img_add + ".png"));
+  ui.runTask->setIconSize(QSize(24, 24));
+
+  ui.cancel->setIcon(
+      QIcon(":media/images/qbutton_icons/cancel" + img_add + ".png"));
+  ui.cancel->setIconSize(QSize(24, 24));
+
+  ui.pause->setIcon(
+      QIcon(":media/images/qbutton_icons/pause" + img_add + ".png"));
+  ui.pause->setIconSize(QSize(24, 24));
+
+  ui.start->setIcon(
+      QIcon(":media/images/qbutton_icons/run" + img_add + ".png"));
+  ui.start->setIconSize(QSize(24, 24));
+
+ui.pause->setEnabled(false);
+
+  QObject::connect(ui.cancel, &QToolButton::clicked, this, [=]() {
   });
-*/
+
 
   QObject::connect(
       ui.showDetails, &QToolButton::toggled, this, [=](bool checked) {
@@ -132,7 +142,7 @@ if (taskName == "") {}
 
 
   ui.showDetails->setStyleSheet(
-      "QToolButton { border: 0; color: green; font-weight: bold;}");
+      "QToolButton { border: 0; color: black; font-weight: bold;}");
   ui.showDetails->setText("  Paused");
 }
 

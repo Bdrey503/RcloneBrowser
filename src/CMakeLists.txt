@@ -66,6 +66,8 @@ set(MOC
   item_model.h
   qcron.h
   schedule_widget.h
+  hours_spinbox.h
+  minutes_spinbox.h
 )
 
 set(OTHER
@@ -101,6 +103,8 @@ set(SOURCE
   qcronfield.cpp
   qcronnode.cpp
   schedule_widget.cpp
+  hours_spinbox.cpp
+  minutes_spinbox.cpp
 )
 
 if(WIN32)

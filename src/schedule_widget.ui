@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>874</width>
-    <height>521</height>
+    <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -98,7 +98,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>runs on MTWTSS at 23:23</string>
+         <string>Next run: Mon, 12 MAY 2020 14:45 BST</string>
         </property>
        </widget>
       </item>
@@ -119,22 +119,42 @@
        </spacer>
       </item>
       <item>
-       <widget class="QToolButton" name="toolButton_2">
+       <widget class="QToolButton" name="start">
+        <property name="styleSheet">
+         <string notr="true">QToolButton { border: 0; }
+
+QToolButton:pressed {
+ border: 4;
+ border-radius: 10px;
+ border-style: inset;
+ border-color: rgba(1, 1, 1, 0);
+}</string>
+        </property>
         <property name="text">
-         <string>...</string>
+         <string>s</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="copy">
+       <widget class="QToolButton" name="pause">
         <property name="toolTip">
          <string>Copy rclone command to clipboard</string>
         </property>
         <property name="statusTip">
          <string>Copy rclone command to clipboard</string>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QToolButton { border: 0; }
+
+QToolButton:pressed {
+ border: 4;
+ border-radius: 10px;
+ border-style: inset;
+ border-color: rgba(1, 1, 1, 0);
+}</string>
+        </property>
         <property name="text">
-         <string>...</string>
+         <string>p</string>
         </property>
        </widget>
       </item>
@@ -146,8 +166,18 @@
         <property name="statusTip">
          <string>Stop</string>
         </property>
+        <property name="styleSheet">
+         <string notr="true">QToolButton { border: 0; }
+
+QToolButton:pressed {
+ border: 4;
+ border-radius: 10px;
+ border-style: inset;
+ border-color: rgba(1, 1, 1, 0);
+}</string>
+        </property>
         <property name="text">
-         <string>...</string>
+         <string>c</string>
         </property>
        </widget>
       </item>
@@ -157,28 +187,7 @@
    <item>
     <widget class="QWidget" name="details" native="true">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
-       <widget class="QToolButton" name="toolButton">
-        <property name="text">
-         <string>Run</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Name:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Taks name: Copy from Google</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
+      <item row="3" column="2">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
          <number>0</number>
@@ -215,7 +224,7 @@
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>20</height>
+                 <height>15</height>
                 </size>
                </property>
               </spacer>
@@ -326,15 +335,12 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox">
-                 <property name="readOnly">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimum">
-                  <number>0</number>
-                 </property>
+                <widget class="HoursSpinBox" name="hours">
                  <property name="maximum">
                   <number>23</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1</number>
                  </property>
                  <property name="value">
                   <number>0</number>
@@ -342,7 +348,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_2">
+                <widget class="MinutesSpinBox" name="minutes">
                  <property name="readOnly">
                   <bool>false</bool>
                  </property>
@@ -419,6 +425,15 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="lineEdit">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>24</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Example cron &quot;30 6,18 */2 * MON-FRI&quot; runs from Mon to Fri, every 2nd day at 06:30 and 18:30.</string>
+                 </property>
                  <property name="text">
                   <string>* * 0 1-2 5</string>
                  </property>
@@ -436,7 +451,7 @@
              <item>
               <widget class="QLabel" name="cronExplanation">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:1.5&quot;&gt;Supports: (0-59), (0-23), (1-31), (1-12 or JAN-DEC), ((7)0-6 or SUN-MON) and special characters (* - / and ,).&lt;br/&gt;Example cron  &quot;30 6,18 */2 * MON-FRI&quot; runs from Mon to Fri, every 2nd day at 08:30 and 18:30.&lt;br/&gt;Try &lt;a href=&quot;https://crontab.guru/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0068da;&quot;&gt;crontab.guru&lt;/span&gt;&lt;/a&gt; for help. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:1.5&quot;&gt;Supports: (0-59), (0-23), (1-31), (1-12 or JAN-DEC), ((7)0-6 or SUN-MON) and special characters (* - / and ,).&lt;br/&gt;Try &lt;a href=&quot;https://crontab.guru/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0068da;&quot;&gt;crontab.guru&lt;/span&gt;&lt;/a&gt; for help. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -466,109 +481,12 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="0">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="6" column="2">
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string>Execution mode</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QComboBox" name="comboBox">
-           <property name="minimumSize">
-            <size>
-             <width>400</width>
-             <height>0</height>
-            </size>
-           </property>
-           <item>
-            <property name="text">
-             <string>Run on schedule</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Add to queue on schedule</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>If other tasks running add to queue, otherwise run</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLineEdit" name="lineEdit_2">
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Scheduled task: Copy from Google</string>
-        </property>
-        <property name="maxLength">
-         <number>100</number>
+         <string>Name:</string>
         </property>
        </widget>
-      </item>
-      <item row="7" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QToolButton" name="toolButton_3">
-          <property name="text">
-           <string>Save new schedule</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="toolButton_4">
-          <property name="text">
-           <string>Cancel</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
       </item>
       <item row="0" column="2">
        <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -605,7 +523,7 @@
         <item>
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>Next run: Mon, 12 MAY 2020 14:45 BST</string>
+           <string>schedule: everyday at 06:00</string>
           </property>
          </widget>
         </item>
@@ -624,11 +542,151 @@
         </item>
        </layout>
       </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Taks name: Copy from Google</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Execution mode</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QComboBox" name="comboBox">
+             <property name="minimumSize">
+              <size>
+               <width>400</width>
+               <height>0</height>
+              </size>
+             </property>
+             <item>
+              <property name="text">
+               <string>Runs on schedule</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Adds to the queue on schedule</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Runs if no other tasks running, otherwise adds to the queue</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Save new schedule</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Cancel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="1">
+       <widget class="QToolButton" name="runTask">
+        <property name="styleSheet">
+         <string notr="true">QToolButton { border: 0; }
+
+QToolButton:pressed {
+ border: 4;
+ border-radius: 10px;
+ border-style: inset;
+ border-color: rgba(1, 1, 1, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Run</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="lineEdit_2">
+        <property name="text">
+         <string>Scheduled task: Copy from Google</string>
+        </property>
+        <property name="maxLength">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HoursSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>hours_spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MinutesSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>minutes_spinbox.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>showDetails</tabstop>
   <tabstop>cancel</tabstop>

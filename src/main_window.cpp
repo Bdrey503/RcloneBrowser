@@ -200,6 +200,12 @@ MainWindow::MainWindow() {
       QIcon(":media/images/qbutton_icons/addtoqueue" + img_add + ".png"));
   ui.actionAddToQueue->setIcon(
       QIcon(":media/images/qbutton_icons/addtoqueue" + img_add + ".png"));
+  ui.buttonAddToScheduler->setIcon(
+      QIcon(":media/images/qbutton_icons/addtoscheduler" + img_add + ".png"));
+  ui.actionAddToScheduler->setIcon(
+      QIcon(":media/images/qbutton_icons/addtoscheduler" + img_add + ".png"));
+
+
 
   ui.actionStartQueue->setIcon(
       QIcon(":media/images/qbutton_icons/run" + img_add + ".png"));
@@ -253,6 +259,7 @@ MainWindow::MainWindow() {
   // menu
   ui.buttonPrefs->setText("Prefs");
   ui.buttonAddToQueue->setText("Add");
+  ui.buttonAddToScheduler->setText("Add");
 
   // open remote should be not active when there is
   // no foucs on any e.g. after start
@@ -327,6 +334,9 @@ MainWindow::MainWindow() {
     ui.buttonUpQueue->setMinimumWidth(button_width);
     ui.buttonStop->setIconSize(QSize(icon_w, icon_h));
     ui.buttonStop->setMinimumWidth(button_width);
+    ui.buttonAddToScheduler->setIconSize(QSize(icon_w, icon_h));
+    ui.buttonAddToScheduler->setMinimumWidth(button_width);
+
 
   } else {
     if (buttonStyle == "textonly") {
@@ -369,6 +379,9 @@ MainWindow::MainWindow() {
       ui.buttonUpQueue->setMinimumWidth(button_width);
       ui.buttonStop->setToolButtonStyle(Qt::ToolButtonTextOnly);
       ui.buttonStop->setMinimumWidth(button_width);
+      ui.buttonAddToScheduler->setToolButtonStyle(Qt::ToolButtonTextOnly);
+      ui.buttonAddToScheduler->setMinimumWidth(button_width);
+
 
     } else {
       // button style - icononly
@@ -410,6 +423,8 @@ MainWindow::MainWindow() {
       ui.buttonUpQueue->setIconSize(QSize(icon_w, icon_h));
       ui.buttonStop->setToolButtonStyle(Qt::ToolButtonIconOnly);
       ui.buttonStop->setIconSize(QSize(icon_w, icon_h));
+      ui.buttonAddToScheduler->setToolButtonStyle(Qt::ToolButtonIconOnly);
+      ui.buttonAddToScheduler->setIconSize(QSize(icon_w, icon_h));
     }
   }
 
@@ -435,7 +450,9 @@ MainWindow::MainWindow() {
   ui.actionEdit->setStatusTip("Edit selected task");
   ui.actionDelete->setStatusTip(
       "Delete selected tasks - only not running tasks can be deleted.");
+
   ui.actionAddToQueue->setStatusTip("Add selected transfer tasks to the queue");
+  ui.actionAddToScheduler->setStatusTip("Add selected transfer tasks to the scheduler");
   ui.actionSortTask->setStatusTip("Sort tasks by name");
 
   ui.actionStartQueue->setStatusTip(
@@ -721,6 +738,7 @@ MainWindow::MainWindow() {
           QMenu menu;
           if (!isMount) {
             menu.addAction(ui.actionAddToQueue);
+            menu.addAction(ui.actionAddToScheduler);
           }
           menu.addSeparator();
           if (!isMount) {
@@ -1587,6 +1605,8 @@ MainWindow::MainWindow() {
   ui.tabs->tabBar()->setTabButton(2, QTabBar::LeftSide, nullptr);
   ui.tabs->tabBar()->setTabButton(3, QTabBar::RightSide, nullptr);
   ui.tabs->tabBar()->setTabButton(3, QTabBar::LeftSide, nullptr);
+  ui.tabs->tabBar()->setTabButton(4, QTabBar::RightSide, nullptr);
+  ui.tabs->tabBar()->setTabButton(4, QTabBar::LeftSide, nullptr);
 
   ui.tabs->setCurrentIndex(0);
 
@@ -1820,6 +1840,7 @@ void MainWindow::setTasksButtons() {
     ui.buttonRunTask->setEnabled(false);
     ui.buttonDryrunTask->setEnabled(false);
     ui.buttonAddToQueue->setEnabled(false);
+    ui.buttonAddToScheduler->setEnabled(false);
   } else {
 
     ui.buttonDeleteTask->setEnabled(true);
@@ -1827,6 +1848,7 @@ void MainWindow::setTasksButtons() {
     ui.buttonRunTask->setEnabled(true);
     ui.buttonDryrunTask->setEnabled(true);
     ui.buttonAddToQueue->setEnabled(true);
+    ui.buttonAddToScheduler->setEnabled(true);
   }
 
   if (ui.tasksListWidget->count() > 1) {
@@ -1900,6 +1922,7 @@ void MainWindow::setTasksButtons() {
   if (isMount) {
     ui.buttonDryrunTask->setEnabled(false);
     ui.buttonAddToQueue->setEnabled(false);
+    ui.buttonAddToScheduler->setEnabled(false);
   }
   return;
 }
@@ -2878,6 +2901,7 @@ void MainWindow::listTasks() {
   ui.buttonStop->setEnabled(false);
   ui.buttonDryrunTask->setEnabled(false);
   ui.buttonAddToQueue->setEnabled(false);
+  ui.buttonAddToScheduler->setEnabled(false);
 
   if (ui.tasksListWidget->count() > 1) {
     ui.buttonSortTask->setEnabled(true);
@@ -3652,14 +3676,14 @@ void MainWindow::slotCloseTab(int index) {
   // only when closing current tab
   if (ui.tabs->currentIndex() == index) {
 
-    if (ui.tabs->count() == 5) {
-      if (index == 4) {
+    if (ui.tabs->count() == 6) {
+      if (index == 5) {
         ui.tabs->setCurrentIndex(0);
       }
     } else {
 
-      if (ui.tabs->count() == 6) {
-        ui.tabs->setCurrentIndex(4);
+      if (ui.tabs->count() == 7) {
+        ui.tabs->setCurrentIndex(5);
       }
     }
   }

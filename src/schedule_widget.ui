@@ -6,21 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>866</width>
-    <height>547</height>
+    <width>874</width>
+    <height>521</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>800</width>
-    <height>0</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -169,37 +157,14 @@
    <item>
     <widget class="QWidget" name="details" native="true">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="1">
+      <item row="1" column="1">
        <widget class="QToolButton" name="toolButton">
         <property name="text">
          <string>Run</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Taks name: Copy from Google</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Name:</string>
@@ -207,54 +172,13 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Scheduled task: Copy from Google</string>
-        </property>
-        <property name="maxLength">
-         <number>100</number>
+         <string>Taks name: Copy from Google</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
-        <item alignment="Qt::AlignLeft">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Last run: Mon, 12 JAN 2020 14:45 GMT </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>finished sucessfully</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Next run: Mon, 12 MAY 2020 14:45 BST</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
+      <item row="5" column="2">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
          <number>0</number>
@@ -267,7 +191,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox_2">
             <property name="title">
-             <string>Schedule</string>
+             <string>Daily schedule</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
@@ -279,6 +203,22 @@
                 <bool>true</bool>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="QCheckBox" name="checkBox_4">
@@ -363,22 +303,21 @@
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_2">
+                <spacer name="horizontalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
                  <property name="sizeHint" stdset="0">
                   <size>
-                   <width>40</width>
+                   <width>15</width>
                    <height>20</height>
                   </size>
                  </property>
                 </spacer>
                </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
@@ -389,7 +328,7 @@
                <item>
                 <widget class="QSpinBox" name="spinBox">
                  <property name="readOnly">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="minimum">
                   <number>0</number>
@@ -405,7 +344,7 @@
                <item>
                 <widget class="QSpinBox" name="spinBox_2">
                  <property name="readOnly">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </property>
                  <property name="maximum">
                   <number>59</number>
@@ -419,7 +358,7 @@
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_3">
+                <spacer name="horizontalSpacer_2">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -453,19 +392,19 @@
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Crontab</string>
+          <string>Cron</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <widget class="QGroupBox" name="groupBox_3">
             <property name="title">
-             <string>GroupBox</string>
+             <string>Cron based schedule</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
               <widget class="QRadioButton" name="radioButton_2">
                <property name="text">
-                <string>Use crontab based schedule</string>
+                <string>Use cron based schedule</string>
                </property>
               </widget>
              </item>
@@ -474,7 +413,7 @@
                <item>
                 <widget class="QLabel" name="label_6">
                  <property name="text">
-                  <string>Crontab:</string>
+                  <string>Cron:</string>
                  </property>
                 </widget>
                </item>
@@ -495,9 +434,15 @@
               </layout>
              </item>
              <item>
-              <widget class="QLabel" name="label_7">
+              <widget class="QLabel" name="cronExplanation">
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;bla bla bla&lt;/p&gt;&lt;p&gt;bla bla bla &lt;/p&gt;&lt;p&gt;bla bla&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;line-height:1.5&quot;&gt;Supports: (0-59), (0-23), (1-31), (1-12 or JAN-DEC), ((7)0-6 or SUN-MON) and special characters (* - / and ,).&lt;br/&gt;Example cron  &quot;30 6,18 */2 * MON-FRI&quot; runs from Mon to Fri, every 2nd day at 08:30 and 18:30.&lt;br/&gt;Try &lt;a href=&quot;https://crontab.guru/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0068da;&quot;&gt;crontab.guru&lt;/span&gt;&lt;/a&gt; for help. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="indent">
+                <number>-1</number>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -521,7 +466,23 @@
         </widget>
        </widget>
       </item>
-      <item row="5" column="2">
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="6" column="2">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Execution mode</string>
@@ -568,7 +529,17 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="2">
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="lineEdit_2">
+        <property name="text">
+         <string>Scheduled task: Copy from Google</string>
+        </property>
+        <property name="maxLength">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QToolButton" name="toolButton_3">
@@ -586,6 +557,60 @@
         </item>
         <item>
          <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item alignment="Qt::AlignLeft">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Last run: Mon, 12 JAN 2020 14:45 GMT </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>finished sucessfully</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Next run: Mon, 12 MAY 2020 14:45 BST</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_8">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>

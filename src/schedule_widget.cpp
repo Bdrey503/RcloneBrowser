@@ -1,13 +1,16 @@
 #include "schedule_widget.h"
 #include "utils.h"
 
-ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
-                           const QString &remote, const QString &stream,
-                           const QStringList &args, QWidget *parent)
+ScheduleWidget::ScheduleWidget(const QString &taskName, QWidget *parent)
     : QWidget(parent) {
+
+if (taskName == "") {}
 
   ui.setupUi(this);
 
+  auto settings = GetSettings();
+
+/*
   QString remoteTrimmed;
 
   auto settings = GetSettings();
@@ -39,6 +42,7 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
 
   ui.output->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
   ui.output->setVisible(false);
+*/
 
   QString iconsColour = settings->value("Settings/iconsColour").toString();
 
@@ -52,10 +56,15 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
       QIcon(":media/images/qbutton_icons/vrightarrow" + img_add + ".png"));
   ui.showDetails->setIconSize(QSize(24, 24));
 
+  ui.details->setVisible(false);
+
+/*
   ui.showOutput->setIcon(
       QIcon(":media/images/qbutton_icons/vrightarrow" + img_add + ".png"));
   ui.showOutput->setIconSize(QSize(24, 24));
+*/
 
+/*
   ui.cancel->setToolTip("Stop streaming");
   ui.cancel->setStatusTip("Stop streaming");
 
@@ -63,10 +72,14 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
       QIcon(":media/images/qbutton_icons/copy" + img_add + ".png"));
   ui.copy->setIconSize(QSize(24, 24));
 
+*/
+
+/*
   QObject::connect(ui.copy, &QToolButton::clicked, this, [=]() {
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setText(mArgs.join(" "));
   });
+*/
 
   QObject::connect(
       ui.showDetails, &QToolButton::toggled, this, [=](bool checked) {
@@ -82,6 +95,7 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
         }
       });
 
+/*
   QObject::connect(
       ui.showOutput, &QToolButton::toggled, this, [=](bool checked) {
         ui.output->setVisible(checked);
@@ -95,7 +109,9 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
           ui.showOutput->setIconSize(QSize(24, 24));
         }
       });
+*/
 
+/*
   ui.cancel->setIcon(
       QIcon(":media/images/qbutton_icons/cancel" + img_add + ".png"));
   ui.cancel->setIconSize(QSize(24, 24));
@@ -112,66 +128,20 @@ ScheduleWidget::StreamWidget(QProcess *rclone, QProcess *player,
       emit closed();
     }
   });
+*/
 
-  QObject::connect(mRclone, &QProcess::readyRead, this, [=]() {
-    while (mRclone->canReadLine()) {
-      ui.output->appendPlainText(mRclone->readLine().trimmed());
-    }
-  });
-
-  QObject::connect(
-      mRclone,
-      static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(
-          &QProcess::finished),
-      this, [=](int status, QProcess::ExitStatus) {
-        mRclone->deleteLater();
-        isRunning = false;
-
-        QString info = "Streaming " + ui.info->text();
-        QString infoTrimmed;
-        if (info.length() > 140) {
-          infoTrimmed = info.left(57) + "..." + info.right(80);
-        } else {
-          infoTrimmed = info;
-        }
-        ui.info->setText(infoTrimmed);
-        ui.info->setCursorPosition(0);
-
-        if (status == 0 || status == 9) {
-          if (iconsColour == "white") {
-            ui.showDetails->setStyleSheet(
-                "QToolButton { border: 0; font-weight: bold;}");
-          } else {
-            ui.showDetails->setStyleSheet(
-                "QToolButton { border: 0; color: black; font-weight: bold;}");
-          }
-          ui.showDetails->setText("  Finished");
-        } else {
-          ui.showDetails->setStyleSheet(
-              "QToolButton { border: 0; color: red; font-weight: bold;}");
-          ui.showDetails->setText("  Error");
-        }
-
-        ui.cancel->setToolTip("Close");
-        ui.cancel->setStatusTip("Close");
-
-        emit finished();
-        //          emit closed();
-      });
 
   ui.showDetails->setStyleSheet(
       "QToolButton { border: 0; color: green; font-weight: bold;}");
-  ui.showDetails->setText("  Streaming");
+  ui.showDetails->setText("  Paused");
 }
 
-StreamWidget::~StreamWidget() {}
+ScheduleWidget::~ScheduleWidget() {}
 
-void StreamWidget::cancel() {
+/*
+void ScheduleWidget::cancel() {
   if (!isRunning) {
     return;
   }
-
-  mPlayer->terminate();
-  mRclone->kill();
-  mRclone->waitForFinished();
 }
+*/

@@ -22,17 +22,14 @@ public:
   bool isRunning = true;
 
 public slots:
-  void cancel();
+//  void cancel();
 
 signals:
-  void finished();
-  void closed();
+//  void finished();
+ // void closed();
 
 private:
-  Ui::StreamWidget ui;
-
-  QProcess *mRclone;
-  QProcess *mPlayer;
-
+  Ui::ScheduleWidget ui;
   QStringList mArgs;
+
 };

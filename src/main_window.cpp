@@ -9,6 +9,7 @@
 #include "stream_widget.h"
 #include "transfer_dialog.h"
 #include "utils.h"
+#include "schedule_widget.h"
 #ifdef Q_OS_MACOS
 #include "global.h"
 #include "osx_helper.h"
@@ -22,6 +23,11 @@ MainWindow::MainWindow() {
   } else {
     this->setWindowTitle("Rclone Browser - BETA release");
   }
+
+
+//!!!
+
+    addSchedule("test");
 
   auto settings = GetSettings();
   ui.queueScriptRun->setChecked(
@@ -619,7 +625,10 @@ MainWindow::MainWindow() {
                        &MainWindow::addStream);
       QObject::connect(remote, &RemoteWidget::addTransfer, this,
                        &MainWindow::addTransfer);
-
+/*!!!
+      QObject::connect(remote, &RemoteWidget::addSchedule, this,
+                       &MainWindow::addSchedule);
+*/
       int index = ui.tabs->addTab(remote, name);
       ui.tabs->setCurrentIndex(index);
     }
@@ -3517,6 +3526,27 @@ void MainWindow::addNewMount(const QString &remote, const QString &folder,
 
   ui.buttonStopAllJobs->setEnabled(mTransferJobCount != 0);
   ui.buttonCleanNotRunning->setEnabled(mJobCount != (ui.jobs->count() - 2) / 2);
+}
+
+
+//!!! add schedule
+void MainWindow::addSchedule(const QString &taskName ) {
+
+if (taskName == "") {}
+
+  if (ui.schedules->count() == 2) {
+    ui.noSchedulesAvailable->hide();
+  }
+
+  auto widget = new ScheduleWidget("task name");
+
+  auto line = new QFrame();
+  line->setFrameShape(QFrame::HLine);
+  line->setFrameShadow(QFrame::Sunken);
+
+  ui.schedules->insertWidget(0, widget);
+  ui.schedules->insertWidget(1, line);
+
 }
 
 void MainWindow::addStream(const QString &remote, const QString &stream,

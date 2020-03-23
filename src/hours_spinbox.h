@@ -12,5 +12,4 @@ public:
 public slots:
   int valueFromText(const QString &text) const;
   QString textFromValue(int value) const;
-
 };

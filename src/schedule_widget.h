@@ -7,29 +7,26 @@ class ScheduleWidget : public QWidget {
   Q_OBJECT
 
 public:
-/*
-  StreamWidget(QProcess *rclone, QProcess *player, const QString &remote,
-               const QString &stream, const QStringList &args,
-               QWidget *parent = nullptr);
-  ~StreamWidget();
-*/
+  /*
+    StreamWidget(QProcess *rclone, QProcess *player, const QString &remote,
+                 const QString &stream, const QStringList &args,
+                 QWidget *parent = nullptr);
+    ~StreamWidget();
+  */
 
-  ScheduleWidget(const QString &taskName,
-               QWidget *parent = nullptr);
+  ScheduleWidget(const QString &taskName, QWidget *parent = nullptr);
   ~ScheduleWidget();
-
 
   bool isRunning = true;
 
 public slots:
-//  void cancel();
+  //  void cancel();
 
 signals:
-//  void finished();
- // void closed();
+  //  void finished();
+  // void closed();
 
 private:
   Ui::ScheduleWidget ui;
   QStringList mArgs;
-
 };

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>874</width>
-    <height>482</height>
+    <width>907</width>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,7 +96,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="nextRun">
         <property name="text">
          <string>Next run: Mon, 12 MAY 2020 14:45 BST</string>
         </property>
@@ -204,7 +204,7 @@ QToolButton:pressed {
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <widget class="QRadioButton" name="radioButton">
+              <widget class="QRadioButton" name="dailyState">
                <property name="text">
                 <string>Use daily schedule</string>
                </property>
@@ -302,7 +302,7 @@ QToolButton:pressed {
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkBox_7">
+                <widget class="QCheckBox" name="cb_sun">
                  <property name="text">
                   <string>Sun</string>
                  </property>
@@ -408,7 +408,7 @@ QToolButton:pressed {
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QRadioButton" name="radioButton_2">
+              <widget class="QRadioButton" name="cronState">
                <property name="text">
                 <string>Use cron based schedule</string>
                </property>
@@ -424,7 +424,7 @@ QToolButton:pressed {
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit">
+                <widget class="QLineEdit" name="cron">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -491,16 +491,9 @@ QToolButton:pressed {
       <item row="0" column="2">
        <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item alignment="Qt::AlignLeft">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="lastRun">
           <property name="text">
            <string>Last run: Mon, 12 JAN 2020 14:45 GMT </string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>finished sucessfully</string>
           </property>
          </widget>
         </item>
@@ -521,9 +514,16 @@ QToolButton:pressed {
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label_8">
+         <widget class="QLabel" name="lastRunFinished">
           <property name="text">
-           <string>schedule: everyday at 06:00</string>
+           <string>finished:  Next run: Mon, 12 MAY 2020 14:45 BST</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lastRunStatus">
+          <property name="text">
+           <string>OK</string>
           </property>
          </widget>
         </item>
@@ -543,7 +543,7 @@ QToolButton:pressed {
        </layout>
       </item>
       <item row="1" column="2">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="taskName">
         <property name="text">
          <string>Taks name: Copy from Google</string>
         </property>
@@ -574,7 +574,7 @@ QToolButton:pressed {
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
-            <widget class="QComboBox" name="comboBox">
+            <widget class="QComboBox" name="cb_executionMode">
              <property name="minimumSize">
               <size>
                <width>400</width>
@@ -661,7 +661,7 @@ QToolButton:pressed {
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="schedulerName">
         <property name="text">
          <string>Scheduled task: Copy from Google</string>
         </property>

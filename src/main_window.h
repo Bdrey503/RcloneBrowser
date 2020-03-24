@@ -31,7 +31,7 @@ private slots:
                    const QString &script, const QString &uniqueId,
                    const QString &info);
 
-  void addSchedule(const QString &taskName);
+  void addSchedule(const QString &taskId, const QString &taskName);
 
   void runQueueScript(const QString &script);
 

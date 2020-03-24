@@ -24,10 +24,6 @@ MainWindow::MainWindow() {
     this->setWindowTitle("Rclone Browser - BETA release");
   }
 
-  //!!!
-
-  addSchedule("test");
-
   auto settings = GetSettings();
   ui.queueScriptRun->setChecked(
       (settings->value("Settings/queueScriptRun").toBool()));
@@ -1214,8 +1210,69 @@ MainWindow::MainWindow() {
   QObject::connect(ui.actionPauseScheduler, &QAction::triggered, this,
                    [=]() {});
 
+  //!!!  QObject::connect(ui.actionAddToScheduler
   QObject::connect(ui.actionAddToScheduler, &QAction::triggered, this,
-                   [=]() {});
+                   [=]() {
+    auto selection = ui.tasksListWidget->selectedItems();                   
+
+       auto settings = GetSettings();
+
+    bool sortTask = settings->value("Settings/sortTask").toBool();
+
+    auto items = sortListWidget(selection, sortTask);
+
+    QString itemsToAdd;
+      
+       // create list of selected tasks' names
+    foreach (auto i, items) {
+      JobOptionsListWidgetItem *item =
+          static_cast<JobOptionsListWidgetItem *>(i);
+      JobOptions *jo = item->GetData();
+      itemsToAdd = itemsToAdd + jo->description + "\n";
+
+      if (jo->operation == JobOptions::Mount) {
+
+        QMessageBox::information(
+            this, tr("Mount tasks selected!"),
+            tr("You selected mount tasks - they can't be added to the queue."));
+
+        return;
+      }
+    }
+   
+if (items.count() > 0) {
+      int button = QMessageBox::question(
+          this, "Add to the scheduler",
+          QString("Are you sure you want to add the following "
+                  "task(s) to the scheduler?\n\n" +
+                  itemsToAdd),
+          QMessageBox::No | QMessageBox::Yes, QMessageBox::No);
+
+      if (button == QMessageBox::Yes) {
+
+
+
+        foreach (auto i, items) {
+          JobOptionsListWidgetItem *item =
+              static_cast<JobOptionsListWidgetItem *>(i);
+
+          JobOptions *jo = item->GetData();
+
+                jo->uniqueId.toString();
+                
+    addSchedule(jo->uniqueId.toString(),  jo->description);
+
+        }
+
+
+
+
+   }
+   
+ }  
+                   
+                   
+ });
 
   //!!! QObject::connect(ui.actionAddToQueue
   QObject::connect(ui.actionAddToQueue, &QAction::triggered, this, [=]() {
@@ -1251,7 +1308,7 @@ MainWindow::MainWindow() {
 
     if (items.count() > 0) {
       int button = QMessageBox::question(
-          this, "Add to queue",
+          this, "Add to the queue",
           QString("Are you sure you want to add the following "
                   "task(s) to the queue?\n\n" +
                   itemsToAdd),
@@ -3690,17 +3747,14 @@ void MainWindow::addNewMount(const QString &remote, const QString &folder,
   ui.buttonCleanNotRunning->setEnabled(mJobCount != (ui.jobs->count() - 2) / 2);
 }
 
-//!!! add schedule
-void MainWindow::addSchedule(const QString &taskName) {
 
-  if (taskName == "") {
-  }
+void MainWindow::addSchedule(const QString &taskId, const QString &taskName) {
 
   if (ui.schedules->count() == 2) {
     ui.noSchedulesAvailable->hide();
   }
 
-  auto widget = new ScheduleWidget("task name");
+  auto widget = new ScheduleWidget(taskId, taskName);
 
   auto line = new QFrame();
   line->setFrameShape(QFrame::HLine);

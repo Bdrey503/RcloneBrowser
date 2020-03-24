@@ -1,15 +1,30 @@
 #include "schedule_widget.h"
 #include "utils.h"
 
-ScheduleWidget::ScheduleWidget(const QString &taskName, QWidget *parent)
+ScheduleWidget::ScheduleWidget(const QString &taskId, const QString &taskName, QWidget *parent)
     : QWidget(parent) {
 
   if (taskName == "") {
   }
 
-  ui.setupUi(this);
+mTaskId = taskId;
+mTaskName = taskName;
 
+  ui.setupUi(this);
   auto settings = GetSettings();
+
+  QString newInfo ="Scheduled task: " + taskName;
+
+  if (newInfo.length() > 140) {
+    mSchedulerName = newInfo.left(57) + "..." + newInfo.right(80);
+  } else {
+    mSchedulerName = newInfo;
+  }
+
+  applySettingsToScreen();
+
+  ui.info->setEnabled(false);
+  ui.nextRun->setEnabled(false);
 
   /*
     QString remoteTrimmed;
@@ -153,3 +168,56 @@ void ScheduleWidget::cancel() {
   }
 }
 */
+
+
+void ScheduleWidget::applySettingsToScreen() {
+
+//  QString mTaskId;
+//  QString mTaskName; //b64
+  ui.taskName->setText(mTaskName);
+
+//  QString mSchedulerName; //b64
+  ui.schedulerName->setText(mSchedulerName);
+  ui.schedulerName->setCursorPosition(0);
+  ui.info->setText(mSchedulerName);
+
+//  QString mSchedulerId = QUuid::createUuid().toString();
+
+//  QString mLastRun; //b64
+  ui.lastRun->setText(mLastRun);
+
+//  QString mRequestId;
+//  QString mLastRunFinished; //b64
+  ui.lastRunFinished->setText(mLastRunFinished);
+//  QString mLastRunStatus; //b64
+  ui.lastRunStatus->setText(mLastRunStatus);
+
+//  bool mDailyState = true;
+//  bool mDailyMon = true;
+//  bool mDailyTue = true;
+//  bool mDailyWed = true;
+//  bool mDailyThu = true;
+//  bool mDailyFri = true;
+//  bool mDailySat = true;
+//  bool mDailySun = true;
+  ui.dailyState->setChecked(mDailyState);
+  ui.cb_mon->setChecked(mDailyMon);
+  ui.cb_tue->setChecked(mDailyTue);
+  ui.cb_wed->setChecked(mDailyThu);
+  ui.cb_thu->setChecked(mDailyThu);
+  ui.cb_fri->setChecked(mDailyFri);
+  ui.cb_sat->setChecked(mDailySat);
+  ui.cb_sun->setChecked(mDailySun);
+
+//  bool mCronState = false;
+  ui.cronState->setChecked(mCronState);
+
+//  QString mCron = "30 6,18 */2 * MON-FRI";
+  ui.cron->setText(mCron);
+
+//  QString executionMode = "1"; //1,2,3
+  ui.cb_executionMode->setCurrentIndex(executionMode.toInt());
+
+}
+
+

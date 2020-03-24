@@ -825,6 +825,7 @@ MainWindow::MainWindow() {
     }
   });
 
+  //!!!  QObject::connect(ui.actionStopAllTransfers
   QObject::connect(ui.actionStopAllTransfers, &QAction::triggered, this, [=]() {
     // we only stop transfer jobs - others are intact
     if (mTransferJobCount != 0) {
@@ -842,7 +843,9 @@ MainWindow::MainWindow() {
         // to prevent race condition with new queue task auto starting
         // (triggered by stopping tasks)
         bool queueActive = false;
-        if ((mQueueStatus == true) && (ui.queueListWidget->count() > 0)) {
+        
+        if ((mQueueStatus == true) && mQueueTaskRunning &&
+            (ui.queueListWidget->count() > 0)) {
           queueActive = true;
           mQueueStatus = false;
           /// remove top task from queue + save it
@@ -892,10 +895,15 @@ MainWindow::MainWindow() {
             JobOptionsListWidgetItem *item =
                 static_cast<JobOptionsListWidgetItem *>(
                     ui.queueListWidget->item(0));
-            runItem(item, "queue");
+            mQueueTaskRunning = true;
+            runItem(item, "queue", item->GetRequestId());
             ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
             setQueueButtons();
+          } else {mQueueTaskRunning = false;
           }
+          
+          
+          
         }
       }
     }
@@ -961,7 +969,7 @@ MainWindow::MainWindow() {
         foreach (auto i, items) {
           JobOptionsListWidgetItem *item =
               static_cast<JobOptionsListWidgetItem *>(i);
-          runItem(item, "task", true);
+          runItem(item, "task", "requestId_placeholder", true);
         }
       }
     }
@@ -1079,7 +1087,7 @@ MainWindow::MainWindow() {
         foreach (auto i, items) {
           JobOptionsListWidgetItem *item =
               static_cast<JobOptionsListWidgetItem *>(i);
-          runItem(item, "task");
+          runItem(item, "task", "requestID_placeholder");
         }
       }
     }
@@ -1202,7 +1210,6 @@ MainWindow::MainWindow() {
     }
   });
 
-  //!!!
   QObject::connect(ui.actionStartScheduler, &QAction::triggered, this,
                    [=]() {});
 
@@ -1212,6 +1219,7 @@ MainWindow::MainWindow() {
   QObject::connect(ui.actionAddToScheduler, &QAction::triggered, this,
                    [=]() {});
 
+  //!!! QObject::connect(ui.actionAddToQueue
   QObject::connect(ui.actionAddToQueue, &QAction::triggered, this, [=]() {
     auto selection = ui.tasksListWidget->selectedItems();
 
@@ -1240,6 +1248,7 @@ MainWindow::MainWindow() {
     }
 
     // if queue is empty we have to start first task
+
     bool isQueueEmpty = (ui.queueListWidget->count() == 0);
 
     if (items.count() > 0) {
@@ -1253,17 +1262,6 @@ MainWindow::MainWindow() {
       if (button == QMessageBox::Yes) {
 
         mQueueCount = mQueueCount + items.count();
-
-        if (mQueueStatus) {
-          if (mQueueCount == 0) {
-            ui.tabs->setTabText(3, QString("Queue (%1)>>(0)").arg(mQueueCount));
-          } else {
-            ui.tabs->setTabText(
-                3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
-          }
-        } else {
-          ui.tabs->setTabText(3, QString("Queue (%1)").arg(mQueueCount));
-        }
 
         foreach (auto i, items) {
           JobOptionsListWidgetItem *item =
@@ -1284,8 +1282,10 @@ MainWindow::MainWindow() {
             jobIcon = mUploadIcon;
           }
 
-          JobOptionsListWidgetItem *newitem =
-              new JobOptionsListWidgetItem(jo, jobIcon, jo->description);
+          //!!!
+
+          JobOptionsListWidgetItem *newitem = new JobOptionsListWidgetItem(
+              jo, jobIcon, jo->description, QUuid::createUuid().toString());
 
           ui.queueListWidget->addItem(newitem);
         }
@@ -1304,8 +1304,9 @@ MainWindow::MainWindow() {
       }
     }
 
-    // if queue was empty we start first taks if queue is running
-    if (mQueueStatus && isQueueEmpty) {
+    // if queue was empty we start first taks if queue is running and there is
+    // no other transfer job running
+    if (mQueueStatus && isQueueEmpty && (mTransferJobCount == 0)) {
 
       if (mQueueCount > 0) {
 
@@ -1313,38 +1314,54 @@ MainWindow::MainWindow() {
             static_cast<JobOptionsListWidgetItem *>(
                 ui.queueListWidget->item(0));
 
-        JobOptions *jo = item->GetData();
+        //        JobOptions *jo = item->GetData();
+        /*!!!
+                // check first if maybe already running (manually by user??)
+                // in that case we only mark it as processing
+                bool isAlreadyRunning = false;
+                int widgetsCount = ui.jobs->count();
+                for (int j = widgetsCount - 2; j >= 0; j = j - 2) {
+                  QWidget *widget = ui.jobs->itemAt(j)->widget();
+                  if (auto transfer = qobject_cast<JobWidget *>(widget)) {
+                    if ((transfer->getUniqueID() == jo->uniqueId.toString()) &&
+                        (transfer->isRunning)) {
+                      isAlreadyRunning = true;
+                      break;
+                    }
+                  }
+                }
+        */
 
-        // check first if maybe already running (manually by user??)
-        // in that case we only mark it as processing
-        bool isAlreadyRunning = false;
-        int widgetsCount = ui.jobs->count();
-        for (int j = widgetsCount - 2; j >= 0; j = j - 2) {
-          QWidget *widget = ui.jobs->itemAt(j)->widget();
-          if (auto transfer = qobject_cast<JobWidget *>(widget)) {
-            if ((transfer->getUniqueID() == jo->uniqueId.toString()) &&
-                (transfer->isRunning)) {
-              isAlreadyRunning = true;
-              break;
-            }
-          }
-        }
-        if (!isAlreadyRunning) {
-          runItem(item, "queue");
-        }
+        runItem(item, "queue", item->GetRequestId());
         ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
+        mQueueTaskRunning = true;
+        ui.tabs->setTabText(3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+      }
+
+    } else {
+
+      if (mQueueStatus) {
+        qDebug() << "mQueueStatus: " << mQueueStatus;
+        qDebug() << "mQueueTaskRunning: " << mQueueTaskRunning;
+
+        if (mQueueTaskRunning) {
+          ui.tabs->setTabText(3,
+                              QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+        } else {
+          ui.tabs->setTabText(3, QString("Queue (%1)>>(0)").arg(mQueueCount));
+        }
+
+      } else {
+        ui.tabs->setTabText(3, QString("Queue (%1)").arg(mQueueCount));
       }
     }
   });
 
+  //!!!  QObject::connect(ui.actionStartQueue
   QObject::connect(ui.actionStartQueue, &QAction::triggered, this, [=]() {
     mQueueStatus = true;
 
-    if (mQueueCount == 0) {
-      ui.tabs->setTabText(3, QString("Queue (%1)>>(0)").arg(mQueueCount));
-    } else {
-      ui.tabs->setTabText(3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
-    }
+    ui.tabs->setTabText(3, QString("Queue (%1)>>(0)").arg(mQueueCount));
 
     ui.buttonStopQueue->setEnabled(true);
     ui.buttonStartQueue->setEnabled(false);
@@ -1392,13 +1409,13 @@ MainWindow::MainWindow() {
     ui.labelQueueInfoStart->show();
     ui.labelQueueInfoStop->hide();
 
-    // if not empty start first task
-    if (mQueueCount > 0) {
+    // if not empty and nothing else running try to start first task
+    if (mQueueCount > 0 && mTransferJobCount == 0) {
       JobOptionsListWidgetItem *item =
           static_cast<JobOptionsListWidgetItem *>(ui.queueListWidget->item(0));
       JobOptions *jo = item->GetData();
 
-      // check first if maybe already running (manually by user??)
+      // check if the same task already running (manually by user??)
       bool isAlreadyRunning = false;
       int widgetsCount = ui.jobs->count();
       for (int j = widgetsCount - 2; j >= 0; j = j - 2) {
@@ -1413,10 +1430,12 @@ MainWindow::MainWindow() {
       }
       // start only when not running already
       if (!isAlreadyRunning) {
-        runItem(item, "queue");
+        mQueueTaskRunning = true;
+        runItem(item, "queue", item->GetRequestId());
+        ui.tabs->setTabText(3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+        ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
+        ui.queueListWidget->item(0)->setSelected(false);
       }
-      ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
-      ui.queueListWidget->item(0)->setSelected(false);
     }
   });
 
@@ -1466,6 +1485,7 @@ MainWindow::MainWindow() {
     ui.labelQueueInfoStart->hide();
   });
 
+  //!!! QObject::connect(ui.actionPurgeQueue
   QObject::connect(ui.actionPurgeQueue, &QAction::triggered, this, [=]() {
     if (ui.queueListWidget->count() > 0) {
 
@@ -1480,7 +1500,7 @@ MainWindow::MainWindow() {
         int itemsCount = ui.queueListWidget->count();
         for (int i = 0; i < itemsCount; i++) {
 
-          if (mQueueStatus) {
+          if (mQueueStatus && mQueueTaskRunning) {
             if (i != 0) {
               --mQueueCount;
               ui.queueListWidget->takeItem(1);
@@ -1782,7 +1802,7 @@ void MainWindow::autoStartMounts(void) {
         static_cast<JobOptionsListWidgetItem *>(ui.tasksListWidget->item(k));
     JobOptions *joTasks = item->GetData();
     if (joTasks->operation == JobOptions::Mount && joTasks->mountAutoStart) {
-      runItem(item, "autostart");
+      runItem(item, "autostart", "requestID_placeholder");
     }
   }
 }
@@ -2794,6 +2814,9 @@ void MainWindow::addTasksToQueue() {
   QFile file(filePath);
   QTextStream in(&file);
 
+  QString fileTaskId;
+  QString fileRequestId;
+
   if (!file.open(QIODevice::ReadOnly)) {
     return;
   } else {
@@ -2803,6 +2826,19 @@ void MainWindow::addTasksToQueue() {
     while (!in.atEnd()) {
 
       QString line = in.readLine();
+
+      if (line.indexOf(",") == -1) {
+        // old task file
+        fileTaskId = line;
+        fileRequestId = QUuid::createUuid().toString();
+
+      } else {
+
+        fileTaskId = line.left(line.indexOf(","));
+        fileRequestId = line.right(line.length() - (line.indexOf(",") + 1));
+      }
+
+      qDebug() << fileTaskId << ", " << fileRequestId;
 
       for (JobOptions *jo : ljo->getTasks()) {
 
@@ -2829,10 +2865,10 @@ void MainWindow::addTasksToQueue() {
           taskNameDisplay = jo->description;
         }
 
-        JobOptionsListWidgetItem *item =
-            new JobOptionsListWidgetItem(jo, jobIcon, taskNameDisplay);
+        JobOptionsListWidgetItem *item = new JobOptionsListWidgetItem(
+            jo, jobIcon, taskNameDisplay, fileRequestId);
 
-        if (jo->uniqueId.toString() == line) {
+        if (jo->uniqueId.toString() == fileTaskId) {
           ++mQueueCount;
           ui.queueListWidget->addItem(item);
         }
@@ -2900,6 +2936,8 @@ void MainWindow::listTasks() {
 
   ListOfJobOptions *ljo = ListOfJobOptions::getInstance();
 
+  //!!!
+
   for (JobOptions *jo : ljo->getTasks()) {
 
     QIcon jobIcon;
@@ -2926,8 +2964,8 @@ void MainWindow::listTasks() {
       taskNameDisplay = jo->description;
     }
 
-    JobOptionsListWidgetItem *item =
-        new JobOptionsListWidgetItem(jo, jobIcon, taskNameDisplay);
+    JobOptionsListWidgetItem *item = new JobOptionsListWidgetItem(
+        jo, jobIcon, taskNameDisplay, "uniqueID_placeholder_task");
     ui.tasksListWidget->addItem(item);
   }
 
@@ -2960,6 +2998,8 @@ void MainWindow::listTasks() {
           static_cast<JobOptionsListWidgetItem *>(ui.queueListWidget->item(i));
       JobOptions *jo_queue = item_queue->GetData();
       uniqueId_queue = jo_queue->uniqueId.toString();
+      // preserve requestId
+      QString requestId = item_queue->GetRequestId();
 
       // if no corresponding item found in the queue means task has been deleted
       // and have to be removed from the queue as well
@@ -2974,6 +3014,9 @@ void MainWindow::listTasks() {
               static_cast<JobOptionsListWidgetItem *>(
                   ui.tasksListWidget->item(j));
           JobOptions *jo_task = item_task->GetData();
+
+          //!!!
+          //          QString requestId = item_task->GetRequestId();
           uniqueId_task = jo_task->uniqueId.toString();
 
           // uniqueId never changes, name can be edited so we check Id
@@ -2998,7 +3041,9 @@ void MainWindow::listTasks() {
 
             JobOptionsListWidgetItem *item_insert =
                 new JobOptionsListWidgetItem(jo_task, jobIcon,
-                                             jo_task->description);
+                                             jo_task->description, requestId);
+
+            qDebug() << "requestId: " << requestId;
 
             ui.queueListWidget->insertItem(i, item_insert);
 
@@ -3053,7 +3098,8 @@ void MainWindow::listTasks() {
 } // MainWindow::listTasks()
 
 void MainWindow::runItem(JobOptionsListWidgetItem *item,
-                         const QString &transferMode, bool dryrun) {
+                         const QString &transferMode, const QString &requestId,
+                         bool dryrun) {
   if (item == nullptr)
     return;
 
@@ -3105,7 +3151,7 @@ void MainWindow::runItem(JobOptionsListWidgetItem *item,
     }
 
     addTransfer(info, jo->source, jo->dest, args, jo->uniqueId.toString(),
-                transferMode);
+                transferMode, requestId);
 
   } else {
     // mount
@@ -3302,7 +3348,7 @@ void MainWindow::saveQueueFile(void) {
 
     JobOptions *jo = jobItem->GetData();
 
-    out << jo->uniqueId.toString() << endl;
+    out << jo->uniqueId.toString() << "," << jobItem->GetRequestId() << endl;
   }
 
   file.close();
@@ -3311,18 +3357,20 @@ void MainWindow::saveQueueFile(void) {
 void MainWindow::addTransfer(const QString &message, const QString &source,
                              const QString &dest, const QStringList &args,
                              const QString &uniqueId,
-                             const QString &transferMode) {
+                             const QString &transferMode,
+                             const QString &requestId) {
 
   QProcess *transfer = new QProcess(this);
   transfer->setProcessChannelMode(QProcess::MergedChannels);
 
   auto widget = new JobWidget(transfer, message, args, source, dest, uniqueId,
-                              transferMode);
+                              transferMode, requestId);
 
   auto line = new QFrame();
   line->setFrameShape(QFrame::HLine);
   line->setFrameShadow(QFrame::Sunken);
 
+  //!!!  QObject::connect(  widget, &JobWidget::finished
   QObject::connect(
       widget, &JobWidget::finished, this, [=](const QString &info) {
         if (mNotifyFinishedTransfers) {
@@ -3387,11 +3435,22 @@ void MainWindow::addTransfer(const QString &message, const QString &source,
 
           // check if finished task the same as running from the queue
           auto transfer = qobject_cast<JobWidget *>(widget);
-          if (transfer->getUniqueID() == jo->uniqueId.toString()) {
+
+          qDebug() << "transfer->getUniqueID(): " << transfer->getUniqueID();
+          qDebug() << "jo->uniqueId.toString(): " << jo->uniqueId.toString();
+          qDebug() << "transfer->getRequestId(): " << transfer->getRequestId();
+          qDebug() << "item->GetRequestId(): " << item->GetRequestId();
+
+          // we also have to check requestId - to distinguish between the same
+          // task triggered by queue/scheduler and by user directly if yes we
+          // try to run next one
+          if ((transfer->getUniqueID() == jo->uniqueId.toString()) &&
+              (transfer->getRequestId() == item->GetRequestId())) {
 
             --mQueueCount;
             // queue is still running, even if mQueueCount is 0
             if (mQueueCount == 0) {
+              mQueueTaskRunning = false;
               ui.tabs->setTabText(3,
                                   QString("Queue (%1)>>(0)").arg(mQueueCount));
               // run queueScript
@@ -3406,10 +3465,6 @@ void MainWindow::addTransfer(const QString &message, const QString &source,
                   runQueueScript(queueScript);
                 }
               }
-
-            } else {
-              ui.tabs->setTabText(
-                  3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
             }
 
             ui.queueListWidget->takeItem(0);
@@ -3439,14 +3494,55 @@ void MainWindow::addTransfer(const QString &message, const QString &source,
                 }
               }
 
-              if (!isAlreadyRunning) {
-                runItem(item, "queue");
+              // if the same task not running and nothing else running
+              if (!isAlreadyRunning && mTransferJobCount == 0) {
+                mQueueTaskRunning = true;
+                runItem(item, "queue", item->GetRequestId());
+
+                ui.tabs->setTabText(
+                    3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+
+                ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
+              } else {
+
+                ui.tabs->setTabText(
+                    3, QString("Queue (%1)>>(0)").arg(mQueueCount));
+
+                mQueueTaskRunning = false;
               }
-              ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
             }
             saveQueueFile();
           }
+
+          else {
+            // finished task was not one from the queue
+            // queue is active and have some tasks and if there is nothing else
+            // running we start top task from the queue
+
+            if (!mQueueTaskRunning) {
+              auto nextTask = ui.queueListWidget->item(0);
+
+              JobOptionsListWidgetItem *item =
+                  static_cast<JobOptionsListWidgetItem *>(nextTask);
+
+              if (mTransferJobCount == 0) {
+
+                mQueueTaskRunning = true;
+                runItem(item, "queue", item->GetRequestId());
+                ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
+                ui.tabs->setTabText(
+                    3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+              }
+
+            } else {
+
+              //              mQueueTaskRunning = false;
+              ui.tabs->setTabText(
+                  3, QString("Queue (%1)>>(1)").arg(mQueueCount - 1));
+            }
+          }
         }
+
         setTasksButtons();
       });
 

@@ -21,7 +21,8 @@ private slots:
 
   void addTransfer(const QString &message, const QString &source,
                    const QString &dest, const QStringList &args,
-                   const QString &uniqueId, const QString &transferMode);
+                   const QString &uniqueId, const QString &transferMode,
+                   const QString &requestId);
   void addStream(const QString &remote, const QString &stream,
                  const QString &remoteType);
 
@@ -69,6 +70,8 @@ private:
 
   // number of queued tasks
   int mQueueCount = 0;
+  // is queued task running
+  bool mQueueTaskRunning = false;
 
   // make queue logic aware that app is quiting
   // so job is not removed from the queue
@@ -89,7 +92,7 @@ private:
   void addEmptyJobsMessage();
 
   void runItem(JobOptionsListWidgetItem *item, const QString &transferMode,
-               bool dryrun = false);
+               const QString &requestId, bool dryrun = false);
   void editSelectedTask();
   QIcon mUploadIcon;
   QIcon mDownloadIcon;

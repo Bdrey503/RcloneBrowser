@@ -843,7 +843,7 @@ MainWindow::MainWindow() {
         // to prevent race condition with new queue task auto starting
         // (triggered by stopping tasks)
         bool queueActive = false;
-        
+
         if ((mQueueStatus == true) && mQueueTaskRunning &&
             (ui.queueListWidget->count() > 0)) {
           queueActive = true;
@@ -899,11 +899,9 @@ MainWindow::MainWindow() {
             runItem(item, "queue", item->GetRequestId());
             ui.queueListWidget->item(0)->setBackground(Qt::darkGreen);
             setQueueButtons();
-          } else {mQueueTaskRunning = false;
+          } else {
+            mQueueTaskRunning = false;
           }
-          
-          
-          
         }
       }
     }

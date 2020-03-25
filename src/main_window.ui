@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>411</height>
+    <width>891</width>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -231,8 +231,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>648</width>
-             <height>245</height>
+             <width>125</width>
+             <height>28</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -723,6 +723,39 @@
            </widget>
           </item>
           <item>
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSchedulerInfoStart">
+            <property name="styleSheet">
+             <string notr="true">color: green; font-weight: bold;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSchedulerInfoStop">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer_19">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -773,8 +806,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>648</width>
-             <height>245</height>
+             <width>843</width>
+             <height>431</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -791,7 +824,7 @@
              <number>0</number>
             </property>
             <item>
-             <layout class="QVBoxLayout" name="schedules">
+             <layout class="QVBoxLayout" name="schedulers">
               <item>
                <widget class="QLabel" name="noSchedulesAvailable">
                 <property name="text">
@@ -829,7 +862,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>696</width>
+     <width>891</width>
      <height>22</height>
     </rect>
    </property>

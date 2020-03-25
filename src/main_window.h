@@ -31,13 +31,15 @@ private slots:
                    const QString &script, const QString &uniqueId,
                    const QString &info);
 
-  void addSchedule(const QString &taskId, const QString &taskName);
+  void addScheduler(const QString &taskId, const QString &taskName,
+                    const QStringList &args);
 
   void runQueueScript(const QString &script);
 
   void slotCloseTab(int index);
 
   void saveQueueFile(void);
+  void saveSchedulerFile(void);
 
   void autoStartMounts(void);
 
@@ -67,6 +69,10 @@ private:
 
   // false = Queue Paused, true = Queue running
   int mQueueStatus = false;
+
+  // number of schedulers
+  int mSchedulersCount = 0;
+  int mRunningSchedulersCount = 0;
 
   // number of queued tasks
   int mQueueCount = 0;
@@ -102,4 +108,6 @@ private:
   int mQuitInfoDelay = 0;
 
   void addTasksToQueue();
+
+  void restoreSchedulersFromFile();
 };

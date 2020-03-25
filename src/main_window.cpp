@@ -6,7 +6,7 @@
 #include "mount_widget.h"
 #include "preferences_dialog.h"
 #include "remote_widget.h"
-#include "schedule_widget.h"
+#include "scheduler_widget.h"
 #include "stream_widget.h"
 #include "transfer_dialog.h"
 #include "utils.h"
@@ -487,6 +487,11 @@ MainWindow::MainWindow() {
   // initial queue status
   ui.labelQueueInfoStop->setText("Queue is not running.");
   setQueueButtons();
+
+  ui.tabs->setTabText(4, QString("Scheduler (0)>>(0)"));
+  ui.labelSchedulerInfoStart->setText("Scheduler is running.");
+  ui.labelSchedulerInfoStart->show();
+  ui.labelSchedulerInfoStop->hide();
 
   QObject::connect(ui.preferences, &QAction::triggered, this, [=]() {
     PreferencesDialog dialog(this);
@@ -1211,19 +1216,18 @@ MainWindow::MainWindow() {
                    [=]() {});
 
   //!!!  QObject::connect(ui.actionAddToScheduler
-  QObject::connect(ui.actionAddToScheduler, &QAction::triggered, this,
-                   [=]() {
-    auto selection = ui.tasksListWidget->selectedItems();                   
+  QObject::connect(ui.actionAddToScheduler, &QAction::triggered, this, [=]() {
+    auto selection = ui.tasksListWidget->selectedItems();
 
-       auto settings = GetSettings();
+    auto settings = GetSettings();
 
     bool sortTask = settings->value("Settings/sortTask").toBool();
 
     auto items = sortListWidget(selection, sortTask);
 
     QString itemsToAdd;
-      
-       // create list of selected tasks' names
+
+    // create list of selected tasks' names
     foreach (auto i, items) {
       JobOptionsListWidgetItem *item =
           static_cast<JobOptionsListWidgetItem *>(i);
@@ -1239,8 +1243,8 @@ MainWindow::MainWindow() {
         return;
       }
     }
-   
-if (items.count() > 0) {
+
+    if (items.count() > 0) {
       int button = QMessageBox::question(
           this, "Add to the scheduler",
           QString("Are you sure you want to add the following "
@@ -1250,29 +1254,26 @@ if (items.count() > 0) {
 
       if (button == QMessageBox::Yes) {
 
-
-
         foreach (auto i, items) {
           JobOptionsListWidgetItem *item =
               static_cast<JobOptionsListWidgetItem *>(i);
 
           JobOptions *jo = item->GetData();
 
-                jo->uniqueId.toString();
-                
-    addSchedule(jo->uniqueId.toString(),  jo->description);
-
+          jo->uniqueId.toString();
+          mSchedulersCount++;
+          QStringList args;
+          args << "NewScheduler";
+          addScheduler(jo->uniqueId.toString(), jo->description, args);
         }
+      }
+      saveSchedulerFile();
 
-
-
-
-   }
-   
- }  
-                   
-                   
- });
+      ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
+                                 .arg(mSchedulersCount)
+                                 .arg(mRunningSchedulersCount));
+    }
+  });
 
   //!!! QObject::connect(ui.actionAddToQueue
   QObject::connect(ui.actionAddToQueue, &QAction::triggered, this, [=]() {
@@ -1719,7 +1720,9 @@ if (items.count() > 0) {
 
   {
     addTasksToQueue();
+    restoreSchedulersFromFile();
     listTasks();
+
   }
 
   QObject::connect(&mSystemTray, &QSystemTrayIcon::activated, this,
@@ -2844,6 +2847,45 @@ void MainWindow::closeEvent(QCloseEvent *ev) {
   }
 }
 
+void MainWindow::restoreSchedulersFromFile() {
+  // make sure that tasks are already listed so we can cross check
+
+  QString filePath = GetConfigDir().absoluteFilePath("scheduler.conf");
+  QFile file(filePath);
+  QTextStream in(&file);
+
+  if (!file.open(QIODevice::ReadOnly)) {
+    return;
+  } else {
+
+    while (!in.atEnd()) {
+
+      QString line = in.readLine();
+
+      // check if corresponding task exist?
+      // get scheduler taskId
+      QStringList args = line.split(",");
+      QString schedulerTaskID = args.at(args.indexOf("mTaskId") + 1);
+
+      ListOfJobOptions *ljo = ListOfJobOptions::getInstance();
+  
+      for (JobOptions *jo : ljo->getTasks()) {
+        if (jo->uniqueId.toString() == schedulerTaskID) {
+          mSchedulersCount++;
+          addScheduler("", "", args);
+        }  
+      }
+    }  
+        
+      file.close();
+  }
+  
+  
+  ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
+                             .arg(mSchedulersCount)
+                             .arg(mRunningSchedulersCount));
+}
+
 void MainWindow::addTasksToQueue() {
   // restore queue from file
   // ignore no more existing
@@ -3150,6 +3192,33 @@ void MainWindow::listTasks() {
   ui.tasksListWidget->setFocus();
   setTasksButtons();
 
+  //!!! update schedulers tasks names
+
+  // loop over all tasks
+  for (int i = 0; i < ui.tasksListWidget->count(); i = i + 1) {
+    JobOptionsListWidgetItem *item =
+        static_cast<JobOptionsListWidgetItem *>(ui.tasksListWidget->item(i));
+    JobOptions *joTasks = item->GetData();
+
+    // loop over all schedulers
+    int schedulersCount = ui.schedulers->count();
+    for (int i = schedulersCount - 2; i >= 0; i = i - 2) {
+      QWidget *widget = ui.schedulers->itemAt(i)->widget();
+
+      if (auto scheduler = qobject_cast<SchedulerWidget *>(widget)) {
+
+        if (joTasks->uniqueId.toString() == scheduler->getSchedulerTaskId()) {
+
+          // update name
+
+          scheduler->updateTaskName(joTasks->description);
+        }
+      }
+    }
+  }
+  
+saveSchedulerFile();
+
 } // MainWindow::listTasks()
 
 void MainWindow::runItem(JobOptionsListWidgetItem *item,
@@ -3404,6 +3473,26 @@ void MainWindow::saveQueueFile(void) {
     JobOptions *jo = jobItem->GetData();
 
     out << jo->uniqueId.toString() << "," << jobItem->GetRequestId() << endl;
+  }
+
+  file.close();
+}
+
+void MainWindow::saveSchedulerFile(void) {
+
+  QString filePath = GetConfigDir().absoluteFilePath("scheduler.conf");
+  QFile file(filePath);
+  QTextStream out(&file);
+  file.open(QIODevice::WriteOnly);
+
+  int schedulersCount = ui.schedulers->count();
+
+  for (int i = schedulersCount - 2; i >= 0; i = i - 2) {
+    QWidget *widget = ui.schedulers->itemAt(i)->widget();
+    if (auto scheduler = qobject_cast<SchedulerWidget *>(widget)) {
+      QStringList args = scheduler->getSchedulerParameters();
+      out << args.join(",") << endl;
+    }
   }
 
   file.close();
@@ -3747,21 +3836,39 @@ void MainWindow::addNewMount(const QString &remote, const QString &folder,
   ui.buttonCleanNotRunning->setEnabled(mJobCount != (ui.jobs->count() - 2) / 2);
 }
 
+void MainWindow::addScheduler(const QString &taskId, const QString &taskName,
+                              const QStringList &args) {
 
-void MainWindow::addSchedule(const QString &taskId, const QString &taskName) {
-
-  if (ui.schedules->count() == 2) {
+  if (ui.schedulers->count() == 2) {
     ui.noSchedulesAvailable->hide();
   }
 
-  auto widget = new ScheduleWidget(taskId, taskName);
+  auto widget = new SchedulerWidget(taskId, taskName, args);
 
   auto line = new QFrame();
   line->setFrameShape(QFrame::HLine);
   line->setFrameShadow(QFrame::Sunken);
 
-  ui.schedules->insertWidget(0, widget);
-  ui.schedules->insertWidget(1, line);
+  QObject::connect(widget, &SchedulerWidget::closed, this, [=]() {
+    ui.schedulers->removeWidget(widget);
+    ui.schedulers->removeWidget(line);
+    widget->deleteLater();
+    delete line;
+    mSchedulersCount--;
+    ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
+                               .arg(mSchedulersCount)
+                               .arg(mRunningSchedulersCount));
+    saveSchedulerFile();
+    if (ui.schedulers->count() == 2) {
+      ui.noSchedulesAvailable->show();
+    }
+  });
+
+  QObject::connect(widget, &SchedulerWidget::save, this,
+                   [=]() { saveSchedulerFile(); });
+
+  ui.schedulers->insertWidget(0, widget);
+  ui.schedulers->insertWidget(1, line);
 }
 
 void MainWindow::addStream(const QString &remote, const QString &stream,

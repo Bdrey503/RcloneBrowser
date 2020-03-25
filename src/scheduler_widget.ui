@@ -279,39 +279,6 @@ QToolButton:pressed {
         </item>
        </layout>
       </item>
-      <item row="2" column="0">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="1">
-       <widget class="QToolButton" name="runTask">
-        <property name="styleSheet">
-         <string notr="true">QToolButton { border: 0; }
-
-QToolButton:pressed {
- border: 4;
- border-radius: 10px;
- border-style: inset;
- border-color: rgba(1, 1, 1, 0);
-}</string>
-        </property>
-        <property name="text">
-         <string>Run</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -700,6 +667,39 @@ QToolButton:pressed {
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="1" column="1">
+       <widget class="QToolButton" name="runTask">
+        <property name="styleSheet">
+         <string notr="true">QToolButton { border: 0; }
+
+QToolButton:pressed {
+ border: 4;
+ border-radius: 10px;
+ border-style: inset;
+ border-color: rgba(1, 1, 1, 0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Run</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

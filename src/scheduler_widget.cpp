@@ -271,14 +271,10 @@ void SchedulerWidget::applyArgsToScheduler(QStringList args) {
 
   int argsLength = args.count();
 
-  qDebug() << "argsLength: " << argsLength;
-
   QString arg;
   QString argValue;
 
   for (int i = 0; i < argsLength; i = i + 2) {
-
-    // qDebug() << "args.at(" << i << "): " << args.at(i);
 
     arg = args.at(i);
     argValue = args.at(i + 1);

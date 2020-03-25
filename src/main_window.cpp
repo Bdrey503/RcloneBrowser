@@ -724,6 +724,8 @@ MainWindow::MainWindow() {
         auto items = ui.tasksListWidget->selectedItems();
         bool isMount = false;
         bool isRunning = false;
+        bool isScheduled = false;
+        int schedulersCount = ui.schedulers->count();
 
         if (items.count() > 0) {
 
@@ -753,6 +755,22 @@ MainWindow::MainWindow() {
                   isRunning = true;
                 }
               }
+
+              if (!isScheduled) {
+                for (int k = schedulersCount - 2; k >= 0; k = k - 2) {
+                  QWidget *widget = ui.schedulers->itemAt(k)->widget();
+                  if (auto scheduler =
+                          qobject_cast<SchedulerWidget *>(widget)) {
+
+                    if (scheduler->getSchedulerTaskId() ==
+                        jo->uniqueId.toString()) {
+
+                      isScheduled = true;
+                      break;
+                    }
+                  }
+                }
+              }
             }
           }
 
@@ -777,7 +795,7 @@ MainWindow::MainWindow() {
           if (items.count() == 1) {
             menu.addAction(ui.actionEdit);
           }
-          if (!isRunning) {
+          if (!isRunning && !isScheduled) {
             menu.addAction(ui.actionDelete);
           }
           menu.exec(ui.tasksListWidget->viewport()->mapToGlobal(pos));
@@ -1265,13 +1283,17 @@ MainWindow::MainWindow() {
           QStringList args;
           args << "NewScheduler";
           addScheduler(jo->uniqueId.toString(), jo->description, args);
-        }
-      }
-      saveSchedulerFile();
 
-      ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
-                                 .arg(mSchedulersCount)
-                                 .arg(mRunningSchedulersCount));
+          saveSchedulerFile();
+
+          ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
+                                     .arg(mSchedulersCount)
+                                     .arg(mRunningSchedulersCount));
+          listTasks();
+        }
+      } else {
+        return;
+      }
     }
   });
 
@@ -1397,8 +1419,6 @@ MainWindow::MainWindow() {
     } else {
 
       if (mQueueStatus) {
-        qDebug() << "mQueueStatus: " << mQueueStatus;
-        qDebug() << "mQueueTaskRunning: " << mQueueTaskRunning;
 
         if (mQueueTaskRunning) {
           ui.tabs->setTabText(3,
@@ -1722,7 +1742,6 @@ MainWindow::MainWindow() {
     addTasksToQueue();
     restoreSchedulersFromFile();
     listTasks();
-
   }
 
   QObject::connect(&mSystemTray, &QSystemTrayIcon::activated, this,
@@ -1976,6 +1995,8 @@ void MainWindow::setTasksButtons() {
   bool isMount = false;
   bool isRunning = false;
   int isNotRunning = items.count();
+  bool isScheduled = false;
+  int schedulersCount = ui.schedulers->count();
 
   if (items.count() > 0) {
 
@@ -1983,6 +2004,20 @@ void MainWindow::setTasksButtons() {
       JobOptionsListWidgetItem *item =
           static_cast<JobOptionsListWidgetItem *>(i);
       JobOptions *jo = item->GetData();
+
+      if (!isScheduled) {
+        for (int i = schedulersCount - 2; i >= 0; i = i - 2) {
+          QWidget *widget = ui.schedulers->itemAt(i)->widget();
+          if (auto scheduler = qobject_cast<SchedulerWidget *>(widget)) {
+
+            if (scheduler->getSchedulerTaskId() == jo->uniqueId.toString()) {
+
+              isScheduled = true;
+              break;
+            }
+          }
+        }
+      }
 
       if (jo->operation == JobOptions::Mount) {
         isMount = true;
@@ -2036,6 +2071,11 @@ void MainWindow::setTasksButtons() {
     ui.buttonAddToQueue->setEnabled(false);
     ui.buttonAddToScheduler->setEnabled(false);
   }
+
+  if (isScheduled) {
+    ui.buttonDeleteTask->setEnabled(false);
+  }
+
   return;
 }
 
@@ -2868,19 +2908,18 @@ void MainWindow::restoreSchedulersFromFile() {
       QString schedulerTaskID = args.at(args.indexOf("mTaskId") + 1);
 
       ListOfJobOptions *ljo = ListOfJobOptions::getInstance();
-  
+
       for (JobOptions *jo : ljo->getTasks()) {
         if (jo->uniqueId.toString() == schedulerTaskID) {
           mSchedulersCount++;
           addScheduler("", "", args);
-        }  
+        }
       }
-    }  
-        
-      file.close();
+    }
+
+    file.close();
   }
-  
-  
+
   ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
                              .arg(mSchedulersCount)
                              .arg(mRunningSchedulersCount));
@@ -2934,8 +2973,6 @@ void MainWindow::addTasksToQueue() {
         fileTaskId = line.left(line.indexOf(","));
         fileRequestId = line.right(line.length() - (line.indexOf(",") + 1));
       }
-
-      qDebug() << fileTaskId << ", " << fileRequestId;
 
       for (JobOptions *jo : ljo->getTasks()) {
 
@@ -3053,7 +3090,7 @@ void MainWindow::listTasks() {
 
     if (jo->operation == JobOptions::Mount) {
       if (jo->mountAutoStart) {
-        taskNameDisplay = jo->description + " (auto)";
+        taskNameDisplay = jo->description + " (*auto)";
       } else {
         taskNameDisplay = jo->description;
       }
@@ -3140,8 +3177,6 @@ void MainWindow::listTasks() {
                 new JobOptionsListWidgetItem(jo_task, jobIcon,
                                              jo_task->description, requestId);
 
-            qDebug() << "requestId: " << requestId;
-
             ui.queueListWidget->insertItem(i, item_insert);
 
             if (i == 0 && mQueueStatus) {
@@ -3187,12 +3222,8 @@ void MainWindow::listTasks() {
 
     saveQueueFile();
   }
-  ui.queueListWidget->setFocus();
-  setQueueButtons();
-  ui.tasksListWidget->setFocus();
-  setTasksButtons();
 
-  //!!! update schedulers tasks names
+  //!!! update schedulers tasks names and add "(scheduled)" to tasks' names
 
   // loop over all tasks
   for (int i = 0; i < ui.tasksListWidget->count(); i = i + 1) {
@@ -3202,22 +3233,75 @@ void MainWindow::listTasks() {
 
     // loop over all schedulers
     int schedulersCount = ui.schedulers->count();
-    for (int i = schedulersCount - 2; i >= 0; i = i - 2) {
-      QWidget *widget = ui.schedulers->itemAt(i)->widget();
+    for (int j = schedulersCount - 2; j >= 0; j = j - 2) {
+      QWidget *widget = ui.schedulers->itemAt(j)->widget();
 
       if (auto scheduler = qobject_cast<SchedulerWidget *>(widget)) {
 
         if (joTasks->uniqueId.toString() == scheduler->getSchedulerTaskId()) {
 
-          // update name
+          // update task name in scheduler
 
           scheduler->updateTaskName(joTasks->description);
+
+          // update task name in tasks list + " (scheduled)"
+          ui.tasksListWidget->takeItem(i);
+
+          QIcon jobIcon = mDownloadIcon;
+
+          if (joTasks->jobType == JobOptions::JobType::Download) {
+            if (joTasks->operation == JobOptions::Mount) {
+              jobIcon = mMountIcon;
+            } else {
+              jobIcon = mDownloadIcon;
+            }
+          }
+          if (joTasks->jobType == JobOptions::JobType::Upload) {
+            jobIcon = mUploadIcon;
+          }
+
+          JobOptionsListWidgetItem *item_insert = new JobOptionsListWidgetItem(
+              joTasks, jobIcon, joTasks->description + " (*Sch)",
+              "placeholder");
+
+          ui.tasksListWidget->insertItem(i, item_insert);
         }
       }
     }
   }
-  
-saveSchedulerFile();
+
+  // restore active tasks colours
+  int widgetsCount = ui.jobs->count();
+  for (int k = 0; k < ui.tasksListWidget->count(); k = k + 1) {
+    JobOptionsListWidgetItem *item =
+        static_cast<JobOptionsListWidgetItem *>(ui.tasksListWidget->item(k));
+
+    JobOptions *joTasks = item->GetData();
+
+    for (int j = widgetsCount - 2; j >= 0; j = j - 2) {
+      QWidget *widget = ui.jobs->itemAt(j)->widget();
+
+      if (auto transfer = qobject_cast<JobWidget *>(widget)) {
+        if ((transfer->getUniqueID() == joTasks->uniqueId.toString()) &&
+            (transfer->isRunning)) {
+          ui.tasksListWidget->item(k)->setBackground(Qt::darkGreen);
+        }
+      }
+
+      if (auto mount = qobject_cast<MountWidget *>(widget)) {
+        if ((mount->getUniqueID() == joTasks->uniqueId.toString()) &&
+            (mount->isRunning)) {
+          ui.tasksListWidget->item(k)->setBackground(Qt::darkGreen);
+        }
+      }
+    }
+  }
+
+  ui.queueListWidget->setFocus();
+  setQueueButtons();
+  ui.tasksListWidget->setFocus();
+  setTasksButtons();
+  saveSchedulerFile();
 
 } // MainWindow::listTasks()
 
@@ -3580,11 +3664,6 @@ void MainWindow::addTransfer(const QString &message, const QString &source,
           // check if finished task the same as running from the queue
           auto transfer = qobject_cast<JobWidget *>(widget);
 
-          qDebug() << "transfer->getUniqueID(): " << transfer->getUniqueID();
-          qDebug() << "jo->uniqueId.toString(): " << jo->uniqueId.toString();
-          qDebug() << "transfer->getRequestId(): " << transfer->getRequestId();
-          qDebug() << "item->GetRequestId(): " << item->GetRequestId();
-
           // we also have to check requestId - to distinguish between the same
           // task triggered by queue/scheduler and by user directly if yes we
           // try to run next one
@@ -3862,6 +3941,7 @@ void MainWindow::addScheduler(const QString &taskId, const QString &taskName,
     if (ui.schedulers->count() == 2) {
       ui.noSchedulesAvailable->show();
     }
+    QTimer::singleShot(0, this, SLOT(listTasks()));
   });
 
   QObject::connect(widget, &SchedulerWidget::save, this,

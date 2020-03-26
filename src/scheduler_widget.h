@@ -39,6 +39,8 @@ private:
   void applySettingsToScreen();
   void applyArgsToScheduler(QStringList args);
 
+  QString enhanceCron(QString cron);
+
   // list of scheduler parameters to be persistent in file
   QString mSchedulerStatus = "paused";
 

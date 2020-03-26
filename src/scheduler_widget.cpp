@@ -1,4 +1,5 @@
 #include "scheduler_widget.h"
+#include "qcron.h"
 #include "utils.h"
 
 SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
@@ -108,7 +109,48 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
 
   ui.pause->setEnabled(false);
 
-  QObject::connect(ui.cancel, &QToolButton::clicked, this, [=]() {});
+  QObject::connect(ui.validate, &QPushButton::clicked, this, [=]() {
+    QString cronExp = enhanceCron(ui.cron->text().trimmed()) + " *";
+
+    QCron cron(cronExp);
+
+    if (!cron.isValid()) {
+
+      QMessageBox::warning(this, "Cron validation",
+                           QString("Your cron definition:\n\n" +
+                                   ui.cron->text().trimmed() +
+                                   "\n\nis not valid."),
+                           QMessageBox::Ok);
+    } else {
+      QDateTime nowDateTime = QDateTime::currentDateTime();
+
+      QMessageBox msgBox;
+
+      msgBox.setText("Cron validation");
+      msgBox.setInformativeText(QString(
+          "Your cron definition is valid:\n\nnext: " +
+          cron.next(nowDateTime).toString("ddd, dd-MMM-yyyy HH:mm t") +
+          +"\nthen: " +
+          cron.next(cron.next(nowDateTime))
+              .toString("ddd, dd-MMM-yyyy HH:mm t") +
+          "\nthen: " +
+          cron.next(cron.next(cron.next(nowDateTime)))
+              .toString("ddd, dd-MMM-yyyy HH:mm t") +
+          "\nthen: " +
+          cron.next(cron.next(cron.next(cron.next(nowDateTime))))
+              .toString("ddd, dd-MMM-yyyy HH:mm t") +
+          "\nthen: " +
+          cron.next(cron.next(cron.next(cron.next(cron.next(nowDateTime)))))
+              .toString("ddd, dd-MMM-yyyy HH:mm t")));
+      msgBox.setIcon(QMessageBox::Information);
+      msgBox.setStandardButtons(QMessageBox::Ok);
+      // msgBox.setStyleSheet("QLabel{min-width: 200px;}");
+      // msgBox.setBaseSize(QSize(600, 120));
+      msgBox.exec();
+    }
+  });
+
+  //  QObject::connect(ui.cancel, &QToolButton::clicked, this, [=]() {});
 
   QObject::connect(
       ui.showDetails, &QToolButton::toggled, this, [=](bool checked) {
@@ -135,40 +177,157 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
     }
   });
 
-  /*
-    QObject::connect(
-        ui.showOutput, &QToolButton::toggled, this, [=](bool checked) {
-          ui.output->setVisible(checked);
-          if (checked) {
-            ui.showOutput->setIcon(QIcon(
-                ":media/images/qbutton_icons/vdownarrow" + img_add + ".png"));
-            ui.showOutput->setIconSize(QSize(24, 24));
-          } else {
-            ui.showOutput->setIcon(QIcon(
-                ":media/images/qbutton_icons/vrightarrow" + img_add + ".png"));
-            ui.showOutput->setIconSize(QSize(24, 24));
-          }
-        });
-  */
+  QObject::connect(ui.dailyState, &QToolButton::clicked, this, [=]() {
+    if (ui.dailyState->isChecked()) {
+      ui.cronState->setChecked(false);
+    } else {
+      ui.dailyState->setChecked(true);
+    }
+  });
 
-  /*
-    ui.cancel->setIcon(
-        QIcon(":media/images/qbutton_icons/cancel" + img_add + ".png"));
-    ui.cancel->setIconSize(QSize(24, 24));
+  QObject::connect(ui.cronState, &QToolButton::clicked, this, [=]() {
+    if (ui.cronState->isChecked()) {
+      ui.dailyState->setChecked(false);
+    } else {
+      ui.cronState->setChecked(true);
+    }
+  });
 
-    QObject::connect(ui.cancel, &QToolButton::clicked, this, [=]() {
-      if (isRunning) {
-        int button = QMessageBox::question(
-            this, "Stop", QString("Do you want to stop %1 stream?").arg(remote),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-        if (button == QMessageBox::Yes) {
-          cancel();
-        }
-      } else {
-        emit closed();
+  QObject::connect(ui.everyday, &QToolButton::clicked, this, [=]() {
+    if (ui.everyday->isChecked()) {
+
+      ui.cb_mon->setChecked(true);
+      ui.cb_tue->setChecked(true);
+      ui.cb_wed->setChecked(true);
+      ui.cb_thu->setChecked(true);
+      ui.cb_fri->setChecked(true);
+      ui.cb_sat->setChecked(true);
+      ui.cb_sun->setChecked(true);
+
+    } else {
+
+      ui.everyday->setChecked(true);
+    }
+  });
+
+  QObject::connect(ui.cb_mon, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_mon->isChecked()) {
+      if (ui.cb_tue->isChecked() && ui.cb_wed->isChecked() &&
+          ui.cb_thu->isChecked() && ui.cb_fri->isChecked() &&
+          ui.cb_sat->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
       }
-    });
-  */
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_tue->isChecked() && !ui.cb_wed->isChecked() &&
+          !ui.cb_thu->isChecked() && !ui.cb_fri->isChecked() &&
+          !ui.cb_sat->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_mon->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_tue, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_tue->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_wed->isChecked() &&
+          ui.cb_thu->isChecked() && ui.cb_fri->isChecked() &&
+          ui.cb_sat->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_wed->isChecked() &&
+          !ui.cb_thu->isChecked() && !ui.cb_fri->isChecked() &&
+          !ui.cb_sat->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_tue->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_wed, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_wed->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_tue->isChecked() &&
+          ui.cb_thu->isChecked() && ui.cb_fri->isChecked() &&
+          ui.cb_sat->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_tue->isChecked() &&
+          !ui.cb_thu->isChecked() && !ui.cb_fri->isChecked() &&
+          !ui.cb_sat->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_wed->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_thu, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_thu->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_tue->isChecked() &&
+          ui.cb_wed->isChecked() && ui.cb_fri->isChecked() &&
+          ui.cb_sat->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_tue->isChecked() &&
+          !ui.cb_wed->isChecked() && !ui.cb_fri->isChecked() &&
+          !ui.cb_sat->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_thu->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_fri, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_fri->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_tue->isChecked() &&
+          ui.cb_wed->isChecked() && ui.cb_thu->isChecked() &&
+          ui.cb_sat->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_tue->isChecked() &&
+          !ui.cb_wed->isChecked() && !ui.cb_thu->isChecked() &&
+          !ui.cb_sat->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_fri->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_sat, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_sat->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_tue->isChecked() &&
+          ui.cb_wed->isChecked() && ui.cb_thu->isChecked() &&
+          ui.cb_fri->isChecked() && ui.cb_sun->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_tue->isChecked() &&
+          !ui.cb_wed->isChecked() && !ui.cb_thu->isChecked() &&
+          !ui.cb_fri->isChecked() && !ui.cb_sun->isChecked()) {
+        ui.cb_sat->setChecked(true);
+      }
+    }
+  });
+
+  QObject::connect(ui.cb_sun, &QToolButton::clicked, this, [=]() {
+    if (ui.cb_sun->isChecked()) {
+      if (ui.cb_mon->isChecked() && ui.cb_tue->isChecked() &&
+          ui.cb_wed->isChecked() && ui.cb_thu->isChecked() &&
+          ui.cb_fri->isChecked() && ui.cb_sat->isChecked()) {
+        ui.everyday->setChecked(true);
+      }
+    } else {
+      ui.everyday->setChecked(false);
+      if (!ui.cb_mon->isChecked() && !ui.cb_tue->isChecked() &&
+          !ui.cb_wed->isChecked() && !ui.cb_thu->isChecked() &&
+          !ui.cb_fri->isChecked() && !ui.cb_sat->isChecked()) {
+        ui.cb_sun->setChecked(true);
+      }
+    }
+  });
 
   ui.showDetails->setStyleSheet(
       "QToolButton { border: 0; color: black; font-weight: bold;}");
@@ -355,3 +514,31 @@ void SchedulerWidget::updateTaskName(const QString newTaskName) {
 }
 
 QString SchedulerWidget::getSchedulerTaskId() { return mTaskId; }
+
+QString SchedulerWidget::enhanceCron(QString cron) {
+
+  QString enhancedCron = cron.toUpper();
+
+  enhancedCron.replace("MON", "1");
+  enhancedCron.replace("TUE", "2");
+  enhancedCron.replace("WED", "3");
+  enhancedCron.replace("THU", "4");
+  enhancedCron.replace("FRI", "5");
+  enhancedCron.replace("SAT", "6");
+  enhancedCron.replace("SUN", "7");
+
+  enhancedCron.replace("JAN", "1");
+  enhancedCron.replace("FEB", "2");
+  enhancedCron.replace("MAR", "3");
+  enhancedCron.replace("APR", "4");
+  enhancedCron.replace("MAY", "5");
+  enhancedCron.replace("JUN", "6");
+  enhancedCron.replace("JUL", "7");
+  enhancedCron.replace("AUG", "8");
+  enhancedCron.replace("SEP", "9");
+  enhancedCron.replace("OCT", "10");
+  enhancedCron.replace("NOV", "11");
+  enhancedCron.replace("DEC", "12");
+
+  return enhancedCron;
+}

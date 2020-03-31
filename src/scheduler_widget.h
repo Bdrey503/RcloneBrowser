@@ -49,7 +49,7 @@ private:
   QString mSchedulerName = ""; // b64
   QString mSchedulerId = QUuid::createUuid().toString();
 
-  QString mLastRun = "Last run: never"; // b64
+  QString mLastRun = "never"; // b64
   QString mRequestId = "";
   QString mLastRunFinished = ""; // b64
   QString mLastRunStatus = "";   // b64
@@ -64,7 +64,7 @@ private:
   bool mDailySun = true;
 
   bool mCronState = false;
-  QString mCron = "30 6,18 */2 * MON-FRI"; // b64
+  QString mCron = "30 6,18 * * MON-FRI"; // b64
 
   QString mExecutionMode = "0"; // 1,2,3
 };

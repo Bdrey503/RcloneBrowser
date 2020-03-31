@@ -1284,13 +1284,14 @@ MainWindow::MainWindow() {
           args << "NewScheduler";
           addScheduler(jo->uniqueId.toString(), jo->description, args);
 
-          saveSchedulerFile();
+          qDebug() << "addScheduler: " << jo->description;
 
           ui.tabs->setTabText(4, QString("Scheduler (%1)>>(%2)")
                                      .arg(mSchedulersCount)
                                      .arg(mRunningSchedulersCount));
-          listTasks();
         }
+        listTasks();
+        //        saveSchedulerFile();
       } else {
         return;
       }
@@ -1359,8 +1360,6 @@ MainWindow::MainWindow() {
           if (jo->jobType == JobOptions::JobType::Upload) {
             jobIcon = mUploadIcon;
           }
-
-          //!!!
 
           JobOptionsListWidgetItem *newitem = new JobOptionsListWidgetItem(
               jo, jobIcon, jo->description, QUuid::createUuid().toString());
@@ -3296,6 +3295,8 @@ void MainWindow::listTasks() {
       }
     }
   }
+
+  qDebug() << "finishing listtasks";
 
   ui.queueListWidget->setFocus();
   setQueueButtons();

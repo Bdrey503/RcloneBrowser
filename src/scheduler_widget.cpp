@@ -24,8 +24,8 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
     // new scheduler - apply defaults
     applySettingsToScreen();
 
-    ui.info->setEnabled(false);
-    ui.nextRun->setEnabled(false);
+    //    ui.info->setEnabled(false);
+    //    ui.nextRun->setEnabled(false);
   } else {
 
     applyArgsToScheduler(args);
@@ -128,18 +128,18 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
 
       msgBox.setText("Cron validation");
       msgBox.setInformativeText(QString(
-          "Your cron definition is valid:\n\nnext: " +
+          "Your cron definition is valid. And will result with the following next schedules:\n\n" +
           cron.next(nowDateTime).toString("ddd, dd-MMM-yyyy HH:mm t") +
-          +"\nthen: " +
+          +"\n" +
           cron.next(cron.next(nowDateTime))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\nthen: " +
+          "\n" +
           cron.next(cron.next(cron.next(nowDateTime)))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\nthen: " +
+          "\n" +
           cron.next(cron.next(cron.next(cron.next(nowDateTime))))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\nthen: " +
+          "\n" +
           cron.next(cron.next(cron.next(cron.next(cron.next(nowDateTime)))))
               .toString("ddd, dd-MMM-yyyy HH:mm t")));
       msgBox.setIcon(QMessageBox::Information);

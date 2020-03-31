@@ -128,7 +128,7 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
 
       msgBox.setText("Cron validation");
       msgBox.setInformativeText(QString(
-          "Your cron definition is valid. And will result with the following next schedules:\n\n" +
+          "Your cron definition is valid. Next five schedules:\n\n" +
           cron.next(nowDateTime).toString("ddd, dd-MMM-yyyy HH:mm t") +
           +"\n" +
           cron.next(cron.next(nowDateTime))

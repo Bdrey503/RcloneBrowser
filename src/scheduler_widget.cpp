@@ -128,18 +128,18 @@ SchedulerWidget::SchedulerWidget(const QString &taskId, const QString &taskName,
 
       msgBox.setText("Cron validation");
       msgBox.setInformativeText(QString(
-          "Your cron definition is valid. Next five schedules:\n\n" +
+          "Your cron definition is valid. Next five schedules:\n\nnext: " +
           cron.next(nowDateTime).toString("ddd, dd-MMM-yyyy HH:mm t") +
-          +"\n" +
+          +"\nthen: " +
           cron.next(cron.next(nowDateTime))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\n" +
+          "\nthen: " +
           cron.next(cron.next(cron.next(nowDateTime)))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\n" +
+          "\nthen: " +
           cron.next(cron.next(cron.next(cron.next(nowDateTime))))
               .toString("ddd, dd-MMM-yyyy HH:mm t") +
-          "\n" +
+          "\nthen: " +
           cron.next(cron.next(cron.next(cron.next(cron.next(nowDateTime)))))
               .toString("ddd, dd-MMM-yyyy HH:mm t")));
       msgBox.setIcon(QMessageBox::Information);
